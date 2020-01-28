@@ -1,5 +1,3 @@
-Fc Analysis
-=====
 Purpose
 -------
 FCAN is a repository where you can find R functions for manipulating Fc Array datasets in a common format.
