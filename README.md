@@ -29,6 +29,6 @@ To-do
  * More documentation
  	* Expanded example file
 	* More comments for each function
- * Get rid of any bugs that appear (just use ![XGH](https://gist.github.com/banaslee/4147370))
+ * Get rid of any bugs that appear (just use [XGH](https://gist.github.com/banaslee/4147370))
 
 If something doesn't work like it should or you have something you wish was included here, send me an email kyle [dot] morrison [dot] gr [at] dartmouth [dot] edu
