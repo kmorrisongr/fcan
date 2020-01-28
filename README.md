@@ -4,7 +4,7 @@ FCAN is a repository where you can find R functions for manipulating Fc Array da
 
 Common Format & Usage
 -----
-![Common Fc Array Format](https://github.com/kmorrisongr/fcanfcd/blob/master/format.png)
+![Common Fc Array Format](https://github.com/kmorrisongr/fcan/blob/master/format.png)
 
 Functions assume the structure of your data matches this. So if, for example, your data is not longitudinal, fill "times" with "dummy". Currently working on this not being a required component.
 
