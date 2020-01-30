@@ -1,5 +1,7 @@
 # Compilation of utility functions for working with Fc Arrays
 
+# TODO: Is R pass-by-value (C) or pass-by-reference (Python's mutability shit)?
+# TODO: Variable name standardization
 
 # -------------------------------------------
 # -------------------------------------------
@@ -34,6 +36,7 @@ fcu_extend = function(vec, max_len, to_app=NA){
 	return(output)
 }
 
+# TODO: Less hard-coded (Chris' METACOLS)
 # Which column has the first feature (i.e. not times or group or subject)
 fcu_first_feat_col = function(fc){
 	return(which(colnames(fc) != "group" & colnames(fc) != "times" & colnames(fc) != "subject")[1])
@@ -47,8 +50,7 @@ fcu_match_rows = function(a, b, data){
 	while (length(local_a) > length(local_b)){
 		toss = 0
 		for (i in 1:length(local_a)){
-			if ( is.na(local_a[i] != local_b[i]) ||
-			    (local_a[i] != local_b[i]) ){
+			if ( is.na(local_a[i] != local_b[i]) || (local_a[i] != local_b[i]) ){
 				toss = i
 				break
 			}
@@ -68,12 +70,14 @@ fcu_match_rows = function(a, b, data){
 # -------------------------------------------
 # -------------------------------------------
 
+# TODO: Handle time points if they exist
+# TODO: More advanced imputation methods
 # Impute values in the Fc Array based on medians within group measurements
 # Make sure you have group information in the Fc Array
 # Provide the column number where features start
 fcu_impute = function(fc, start_col, type="det", method=median){
 	local = fc
-	groups = levels(local[,"group"])
+	groups = levels(local$group)
 
 	for (i in start_col:ncol(local)){
 		for (g in groups){
@@ -94,24 +98,23 @@ fcu_sub_back = function(fc, base_ids){
 	local = fc
 
 	for (i in fcu_first_feat_col(local):ncol(local)){
-		# Background subtract PLACEBO from VACCINE
-		placebo = local[base_ids,i]
-		vaccine = local[!base_ids,i]
+		baseline = local[base_ids,i]
+		measures = local[!base_ids,i]
 
-		# Anyone who is negative gets set to 0 (because negative makes no sense)
-		placebo[placebo < 0] = 0 
-		background = median(placebo, na.rm=TRUE)
-		back_sd = sd(placebo, na.rm=TRUE) 
+		# Anyone who is negative gets set to 0 (because negative MFI makes no sense)
+		baseline[baseline < 0] = 0 
+		background = median(baseline, na.rm=TRUE)
+		back_sd = sd(baseline, na.rm=TRUE) 
 
-		vaccine = vaccine - background
-		vaccine[vaccine < 0] = 0
+		measures = measures - background
+		measures[measures < 0] = 0
 
 		# Everyone who is PLACEBO for a feature gets set to 0 
 		local[base_ids,i] = 0
 		
-		# Scale everyone according to the variation in the measurement itself (i.e. in PLACEBO)
-		vaccine = vaccine/back_sd 
-		local[!base_ids,i] = vaccine
+		# Scale everyone according to the variation in the measurement itself (i.e. in baseline)
+		measures = measures/back_sd 
+		local[!base_ids,i] = measures
 	}
 
 	return(local)
@@ -169,13 +172,13 @@ fcu_filter_features = function(fc, to_keep, action, behavior="permissive", diff_
 	keep = vector("logical")
 
 	if ( (behavior == "differs") && (!is.null(diff_opts)) ){
-		p_vals = feats_diff(local,diff_opts)
+		p_vals = fcu_feats_diff(local, diff_opts)
 		keep = p_vals < 0.05
 
 	} else {
-		# Written this way to accomdate & and |
+		# Written this way to accommodate & and |
 		for (i in 1:length(to_keep)){
-			i_keep = grepl(to_keep[i],feats)
+			i_keep = grepl(to_keep[i], feats)
 
 			if (i == 1){
 				keep = i_keep
@@ -229,8 +232,8 @@ fcu_remove_cor = function(data, cor_cutoff, keep_behavior){
 	} else if (keep_behavior == "first"){
 		keep = high_cor[1]
 	}
-	high_cor = high_cor[-keep]
 
+	high_cor = high_cor[-keep]
 	data = data[,-high_cor]
 
 	return(data)
@@ -291,9 +294,9 @@ fcu_breadth_score = function(fc, to_condense){
 
 	local = data.frame(fc[,fcu_first_feat_col(fc):ncol(fc)])
 	local = local[,to_condense]
-	output = fcu_filter_features(output,to_condense,"toss")
+	output = fcu_filter_features(output, to_condense, "toss")
 
-	scores = as.vector(apply(local,1,geom_mean))
+	scores = as.vector(apply(local, 1, geom_mean))
 
 	# Replace to_condense features with combined score
 	if (fcu_first_feat_col(fc) != 1){
@@ -344,6 +347,7 @@ fcu_dimred = function(fc, method="pca", dims=NULL, perplexity=30, init_pca=TRUE,
 	} else if (method == "umap"){
 		library(umap)
 
+		# TODO: Move this junk to a longer umap() call
 		custom_config = umap.defaults
 		custom_config$n_components = dims
 		custom_config$epochs = max_iters
@@ -413,7 +417,7 @@ fcu_covb = function(fc, method=fch_covb_simple){
 	for (s in subjects){
 		idx = which(output$subject == s)[1]
 
-		# If subject not present after baseline
+		# If subject present after baseline
 		if (!is.na(idx)){
 			for (t in times[-1]){
 				for (i in fcu_first_feat_col(output):ncol(output)){
@@ -473,7 +477,7 @@ fcu_sing_comp_foch = function(local_data, comp_name, method=median, alternative=
 		p_val = test$p.value
 	}
 
-	output = list(sing_foch=sing_foch,p_val=p_val)
+	output = list(sing_foch=sing_foch, p_val=p_val)
 	return(output)
 }
 
@@ -502,52 +506,28 @@ fcu_test_model = function(model, test, test_group){
 # -------------------------------------------
 # -------------------------------------------
 
-# A function for getting the color for a reagant
-fcu_get_color = function(feat, reag_cats, reag_cols){
-	feat = tolower(feat); reag_cats = tolower(reag_cats);
+# A function for getting the properties for a feature (reagant or antigen)
+fcu_get_prop = function(feat, prop_cats, prop_quals){
+	feat = tolower(feat); prop_cats = tolower(prop_cats);
 
-	for (i in 1:length(reag_cats)){
-		if (any(grepl(reag_cats[i], feat))){
-			return(reag_cols[i])
+	for (i in 1:length(prop_cats)){
+		if (any(grepl(prop_cats[i], feat))){
+			return(prop_quals[i])
 		}
 
-		# if this reag_cats has commas, split it, and then sub-check
-		split_reag = strsplit(reag_cats[i], ',')[[1]]
-		if (length(split_reag) > 1){
-			# For any of these, return the same reag_cols
-			for (sub_reag in split_reag){
-				if (any(grepl(sub_reag, feat))){
-					return(reag_cols[i])
-				}
-			}
-		}
-	}
-
-	return(reag_cols[length(reag_cols)])
-}
-
-# A function for getting the shape for an antigen
-fcu_get_shape = function(feat, feat_ant, ant_shapes){
-	feat = tolower(feat); feat_ant = tolower(feat_ant);
-
-	for (i in 1:length(feat_ant)){
-		if (any(grepl(feat_ant[i], feat))){
-			return(ant_shapes[i])
-		}
-
-		# if this feat_ant has commas, split it, and then sub-check
-		split_feat = strsplit(feat_ant[i], ',')[[1]]
+		# if this prop_cats has commas, split it, and then sub-check
+		split_feat = strsplit(prop_cats[i], ',')[[1]]
 		if (length(split_feat) > 1){
 			# For any of these, return the same ant_shape
 			for (sub_feat in split_feat){
 				if (any(grepl(sub_feat, feat))){
-					return(ant_shapes[i])
+					return(prop_quals[i])
 				}
 			}
 		}
 	}
 
-	return(ant_shapes[length(ant_shapes)])
+	return(prop_quals[length(prop_quals)])
 }
 
 # Plot -log10(p_vals)
@@ -591,6 +571,7 @@ fcu_make_reag_legend = function(gopts){
 	       pch=c(rep(21,length(gopts$reag_cols)), c(gopts$ant_shapes)))
 }
 
+# TODO: Will legend() be fine with xpd=TRUE?
 # A function that does some serious volcano plotting, mate
 # Defaults: volc_xlim=c(-2.5,2.5), volc_ylim=c(0,8), inset=c(-0.18,0)
 fcu_volcano_plot = function(foch, p_vals, line_method, feat_names, main, xlab, ylab, gopts, pt_colors, pt_shapes, outside_legend=TRUE){
@@ -631,6 +612,8 @@ fcu_volcano_plot = function(foch, p_vals, line_method, feat_names, main, xlab, y
 # -------------------------------------------
 # -------------------------------------------
 
+# TODO: Handle time points
+# TODO: Handle order: (g12a, g12b, g12c, g13a, g13b, g13c) vs (g12a, g13a, g12b, g13b, g12c, g13c)
 # Returns a list of datasets representing pairwise combinations of the groups
 fcu_fcs_combs = function(fc, groups){
 	fcs = list()
@@ -684,7 +667,7 @@ fcu_fcs_find_ylim = function(data_list, data_clm){
 	# If we didn't find anything
 	if (is.null(y_min) & is.null(y_max)){
 		ylim = NULL
-		write("No limits found - check your data, fc_find_ylim(), and potentially fc_covb.R",file='')
+		write("No limits found - check your data, fcu_fcs_find_ylim(), and potentially fc_covb.R",file='')
 
 	# If y_max but no y_min
 	} else if (is.null(y_min)){

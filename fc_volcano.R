@@ -50,8 +50,8 @@ fc_volcano = function(fcs_names, stats_dir, times, adj_method, line_method, gopt
 				   "adjust: ",adj_method," - line: ",line_method,sep='')
 
 			# Decide the colors and the shapes for the features
-			pt_colors = as.vector(sapply(rownames(foch_table), fcu_get_color, gopts$reag_cats, gopts$reag_cols))
-			pt_shapes = as.vector(sapply(rownames(foch_table), fcu_get_shape, gopts$feat_ant, gopts$ant_shapes))
+			pt_colors = as.vector(sapply(rownames(foch_table), fcu_get_prop, gopts$reag_cats, gopts$reag_cols))
+			pt_shapes = as.vector(sapply(rownames(foch_table), fcu_get_prop, gopts$feat_ant, gopts$ant_shapes))
 
 			xlab = "-log10(Fold Change)"
 			ylab = "-log10(p-value)"
