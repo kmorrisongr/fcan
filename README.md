@@ -22,7 +22,7 @@ This is how I have my directories laid out. If you construct a similar setup, yo
 
 Installation
 ------------
-Clone this repository, or download fc\_utils.R somehow, and then source("fc\_utils.R") in your R code.
+Clone/download this repository however you like. Then use source("fc\_utils.R"), etc. in your code. Working on turning all of this into an R package.
 
 To-do
 ----
