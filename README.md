@@ -6,7 +6,7 @@ Common Format & Usage
 -----
 ![Common Fc Array Format](https://github.com/kmorrisongr/fcan/blob/master/format.png)
 
-Functions assume the structure of your data matches this. Having longitudinal information ("times" column is optional) - if your data is single-time-point, no "times" column necessary.
+Functions assume the structure of your data matches this. Having longitudinal information ("times" column) is optional - if your data is single-time-point, no "times" column necessary.
 
 ### Recommended Layout
 This is the suggested directory structure. Modify flags$adj_cwd if __experiments/__ does not live below fc\_load\_config.R
