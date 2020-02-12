@@ -14,7 +14,7 @@ This is the suggested directory structure. Modify flags$adj_cwd if __experiments
 * __parent/__
 	* __results/__ contains the output of all your experiments
 	* __studies/__ contains all data (presumably in further sub-directories) for the studies you are working on
-	* __working/__ contains fc\_config files, symlink (ln -s) to fc\_load\_config
+	* __working/__ contains fc\_config files
 		* __experiments/__ contains .R files that are your day-to-day "experiments"
 			* __funcs/__ if you want to repeat an experiment (likely), build a function for it and stuff it here
 
