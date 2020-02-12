@@ -35,6 +35,7 @@ Then you're off to the races!
 To-do
 ----
  * More documentation
+ 	* Continued oxygenizing of functions
  	* example.R/wiki of some sort
  * Get rid of any bugs that appear (just use [XGH](https://gist.github.com/banaslee/4147370))
 
