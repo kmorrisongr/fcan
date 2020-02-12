@@ -1,0 +1,12 @@
+Package: fcan
+Title: Fc Array Analysis and Manipulation
+Version: 0.2
+Authors@R: 
+    person(given = "Kyle",
+           family = "Morrison",
+           role = c("aut", "cre"),
+           email = "kyle.morrison.gr@dartmouth.edu")
+Maintainer: Kyle Morrison <kyle.morrison.gr@dartmouth.edu>
+License: MIT
+Encoding: UTF-8
+RoxygenNote: 7.0.2.9000
