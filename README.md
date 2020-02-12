@@ -22,8 +22,11 @@ Installation
 ------------
 In R:
 install.packages("devtools")
+
 library(devtools)
+
 install\_github("kmorrisongr/fcan")
+
 library(fcan)
 
 Then you're off to the races!
