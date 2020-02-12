@@ -20,7 +20,7 @@ This is the suggested directory structure. Modify flags$adj_cwd if __experiments
 
 Installation
 ------------
-In R:
+__In R:__
 
 install.packages("devtools")
 
