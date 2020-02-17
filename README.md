@@ -2,7 +2,7 @@ Purpose
 -------
 FCAN is a repository where you can find R functions for manipulating Fc Array datasets in a common format.
 
-Common Format & Usage
+General Usage and Advice
 -----
 ![Common Fc Array Format](https://github.com/kmorrisongr/fcan/blob/master/format.png)
 
@@ -18,25 +18,13 @@ This is the suggested directory structure. Modify flags$adj_cwd if __experiments
 		* __experiments/__ contains .R files that are your day-to-day "experiments"
 			* __funcs/__ if you want to repeat an experiment (likely), build a function for it and stuff it here
 
-Installation
-------------
-__In R:__
-
-install.packages("devtools")
-
-library(devtools)
-
-install\_github("kmorrisongr/fcan")
-
-library(fcan)
-
-Then you're off to the races!
+### For more information, see the [wiki](https://github.com/kmorrisongr/fcan/wiki)!
 
 To-do
 ----
  * More documentation
- 	* Continued oxygenizing of functions
- 	* example.R/wiki of some sort
+ 	* Continue oxygenizing functions
+ 	* example.R file with beginner/intermediate/advanced function usage examples
  * Get rid of any bugs that appear (just use [XGH](https://gist.github.com/banaslee/4147370))
 
 If something doesn't work like it should or you have something you wish was included here, send me an email kyle [dot] morrison [dot] gr [at] dartmouth [dot] edu
