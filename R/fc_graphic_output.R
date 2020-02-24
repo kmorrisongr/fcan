@@ -1,6 +1,6 @@
 # -------------------------------------------
 # -------------------------------------------
-# 7. GRAPHICAL OUTPUT
+# GRAPHICAL OUTPUT
 # -------------------------------------------
 # -------------------------------------------
 
@@ -128,8 +128,14 @@ fcgo_boxplot = function(fc, to_box, results_dir, flags, gopts, seed=1337){
 
 		# ?ifelse to understand [1]
 		xlab = ifelse(!grepl("dummy", times, fixed=TRUE), "Time Point", '')[1]
-		#ylab="log10(MFI)"
-		ylab = ifelse(is.null(gopts$ylab), "MFI", gopts$ylab)
+
+		# y axis labels
+		if (grepl("score", f, fixed=TRUE)){
+			ylab = "Score"
+
+		} else {
+			ylab = ifelse(is.null(gopts$ylab), "MFI", gopts$ylab)
+		}
 
 		boxplot(measures ~ box_groups, at=box_at, names=NA, col="white", 
 			main=main, outline=FALSE, xlab=xlab, ylab=ylab, ylim=ylim)

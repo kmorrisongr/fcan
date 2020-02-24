@@ -1,6 +1,6 @@
 # -------------------------------------------
 # -------------------------------------------
-# 3. FEATURE FILTERING
+# FEATURE FILTERING
 # -------------------------------------------
 # -------------------------------------------
 
@@ -94,7 +94,7 @@ fcff_feats_diff = function(fc, diff_opts){
 #'
 #' @export
 fcff_filter_features = function(fc, feats, action, behavior="permissive", diff_opts=NULL){
-	if (!(length(feats) > 0)){
+	if (!(length(feats) > 0) && is.null(diff_opts)){
 		return(fc)
 	}
 	local = data.frame(fc[,fccu_first_feat_col(fc):ncol(fc)])
@@ -215,7 +215,7 @@ fcff_remove_cor = function(fc, cutoff, behavior="sample"){
 #' @param discard_filter A vector of strings of features that you want to remove from fc. If no discarding is to be done, pass an empty vector c().
 #' @param k_behavior A string "permissive" or "strict" controlling keeping behavior. Can also be set to "differs" to perform fcff_feats_diff. See ?fcff_filter_features for more.
 #' @param d_behavior A string "permissive" or "strict" controlling discarding behavior. Can also be set to "differs" to perform fcff_feats_diff. See ?fcff_filter_features for more.
-#' @param diff_opts A list of subparameters for fcff_feats_diff. Pass "NULL" if you don't want to do any fcu_feats_diff things. See ?fcu_feats_diff for more.
+#' @param diff_opts A list of subparameters for fcff_feats_diff. Pass "NULL" if you don't want to do any fcff_feats_diff things. See ?fcff_feats_diff for more.
 #'
 #' @return A list containing the filtered Fc Array data frame (accessed by $fc), and the new results_dir string based on the filtering performed (accessed by $results_dir). If both keeping and discarding are performed, results_dir will be of the form complex_YYYYMMDD_HHMMSS, and the directory will contain a txt file with the filtering that was performed.
 #'

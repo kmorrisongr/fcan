@@ -21,55 +21,61 @@ fc_load_config = function(config_location, experiment_name, flags, gopts, fc=NUL
 	setwd(config_dir)
 	source(config_name)
 
-	if (is.null(fc)){
+	results_dir = paste(results_dir, experiment_name, '/', sep='')
+
+	if (exists("surv_location")){
+		surv = read.csv(file=surv_location, stringsAsFactors=FALSE, header=TRUE)
+		colnames(surv) = c("id", "group", "infected")
+	}
+
+	if (is.null(fc) && exists("fc_location")){
 		fc = read.csv(file=fc_location, stringsAsFactors=FALSE, header=TRUE)
 		fc$group = as.factor(fc$group)
 	}
 
-	fc = fcdc_impute(fc)
+	# Even if you don't read an fc, fc=NULL being defined means this check will work
+	if (!is.null(fc)){
+		fc = fcdc_impute(fc)
 
-	if (!is.null(flags$do_standard) && flags$do_standard){
-		fc = fcdc_normalize(fc)
-	}
-
-	surv = read.csv(file=surv_location, stringsAsFactors=FALSE, header=TRUE)
-	colnames(surv) = c("id", "group", "infected")
-
-	groups = levels(fc$group)
-	times = unique(fc$times)
-
-	results_dir = paste(results_dir, experiment_name, '/', sep='')
-	filtered = fcff_wrap_filter(fc, results_dir, keep_filter, discard_filter, k_behavior, d_behavior)
-	fc = filtered$fc
-	results_dir = filtered$results_dir
-
-	# RV144
-	if (!is.null(flags$do_only_group) && !is.null(only_group) && flags$do_only_group){
-		fc = fcff_only_attr(fc, only_group, groups, "group")
-		results_dir = paste(results_dir, "only_", tolower(substr(only_group,1,4)), '/', sep='')
-		dir.create(results_dir)
-	}
-
-	if (!is.null(flags$do_bin) && flags$do_bin){
-		fc = bin_method(fc, samples, surv)
-		results_dir = paste(results_dir, "binned/", sep='')
-		dir.create(results_dir)
-		base_ids = (fc[,"group"] == "yes")
-	}
-
-	if (!is.null(flags$do_differs) && flags$do_differs){
-		if (!flags$do_bin){
-			base_ids = (fc[,"group"] == ref_group)
+		if (!is.null(flags$do_standard) && flags$do_standard){
+			fc = fcdc_normalize(fc)
 		}
-			
-		diff_opts = list()
-		diff_opts$base_ids = base_ids
-		diff_opts$test = wilcox.test
-		diff_opts$alternative = "either"
-		diff_opts$adj_method = "fdr"
-		filtered = fcff_wrap_filter(fc, results_dir, keep_filter, discard_filter, "differs", "NULL", diff_opts)
+
+		groups = levels(fc$group)
+		times = unique(fc$times)
+
+		filtered = fcff_wrap_filter(fc, results_dir, keep_filter, discard_filter, k_behavior, d_behavior)
 		fc = filtered$fc
 		results_dir = filtered$results_dir
+
+		# RV144
+		if (!is.null(flags$do_only_group) && !is.null(only_group) && flags$do_only_group){
+			fc = fcff_only_attr(fc, only_group, groups, "group")
+			results_dir = paste(results_dir, "only_", tolower(substr(only_group,1,4)), '/', sep='')
+			dir.create(results_dir)
+		}
+
+		if (!is.null(flags$do_bin) && flags$do_bin){
+			fc = bin_method(fc, samples, surv)
+			results_dir = paste(results_dir, "binned/", sep='')
+			dir.create(results_dir)
+			base_ids = (fc[,"group"] == "yes")
+		}
+
+		if (!is.null(flags$do_differs) && flags$do_differs){
+			if (!flags$do_bin){
+				base_ids = (fc[,"group"] == ref_group)
+			}
+				
+			diff_opts = list()
+			diff_opts$base_ids = base_ids
+			diff_opts$test = wilcox.test
+			diff_opts$alternative = "either"
+			diff_opts$adj_method = "fdr"
+			filtered = fcff_wrap_filter(fc, results_dir, keep_filter, discard_filter, "differs", "NULL", diff_opts)
+			fc = filtered$fc
+			results_dir = filtered$results_dir
+		}
 	}
 
 	sink(paste(results_dir, "sessionInfo.txt", sep=''))
@@ -82,5 +88,11 @@ fc_load_config = function(config_location, experiment_name, flags, gopts, fc=NUL
 	}
 
 	setwd(backup)
-	return(list(fc=fc, results_dir=results_dir))
+
+	if (!is.null(fc)){
+		return(list(fc=fc, results_dir=results_dir))
+
+	} else {
+		return(list(results_dir=results_dir))
+	}
 }

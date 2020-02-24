@@ -27,7 +27,7 @@ fcff_wrap_filter(
 
 \item{d_behavior}{A string "permissive" or "strict" controlling discarding behavior. Can also be set to "differs" to perform fcff_feats_diff. See ?fcff_filter_features for more.}
 
-\item{diff_opts}{A list of subparameters for fcff_feats_diff. Pass "NULL" if you don't want to do any fcu_feats_diff things. See ?fcu_feats_diff for more.}
+\item{diff_opts}{A list of subparameters for fcff_feats_diff. Pass "NULL" if you don't want to do any fcff_feats_diff things. See ?fcff_feats_diff for more.}
 }
 \value{
 A list containing the filtered Fc Array data frame (accessed by $fc), and the new results_dir string based on the filtering performed (accessed by $results_dir). If both keeping and discarding are performed, results_dir will be of the form complex_YYYYMMDD_HHMMSS, and the directory will contain a txt file with the filtering that was performed.

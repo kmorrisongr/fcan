@@ -46,7 +46,7 @@ fcdr_breadth_score = function(fc, to_condense, name=NULL){
 	if (is.null(name)){
 		# We assume these are all related features
 		new_title = strsplit(to_condense[1], '[.]')[[1]][1]
-		new_title = paste(new_title, "_score", sep='')
+		new_title = paste(new_title, length(to_condense), "score", sep='_')
 
 	} else {
 		new_title = name
@@ -83,16 +83,13 @@ fcdr_fc_breadth = function(fc, to_condense){
 		split_feat = strsplit(f, ',')[[1]]
 		if (length(split_feat) > 1){
 			for (sub_feat in split_feat){
-				fc_breadth = fcdr_breadth_score(fc_breadth,
-								colnames(fc_breadth)[grepl(sub_feat, colnames(fc_breadth),
-											   fixed=TRUE)],
-								name=paste(sub_feat, "score", sep='_'))
+				to_condense = colnames(fc_breadth)[grepl(sub_feat, colnames(fc_breadth), fixed=TRUE)]
+				fc_breadth = fcdr_breadth_score(fc_breadth, to_condense, name=paste(sub_feat, length(to_condense), "score", sep='_'))
 			}
 
 		} else {
-			fc_breadth = fcdr_breadth_score(fc_breadth,
-							colnames(fc_breadth)[grepl(f, colnames(fc_breadth), fixed=TRUE)],
-							name=paste(f, "score", sep='_'))
+			to_condense = colnames(fc_breadth)[grepl(f, colnames(fc_breadth), fixed=TRUE)]
+			fc_breadth = fcdr_breadth_score(fc_breadth, to_condense, name=paste(f, length(to_condense), "score", sep='_'))
 		}
 	}
 
