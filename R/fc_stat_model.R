@@ -21,7 +21,7 @@ fcsm_test_model = function(model, test, test_group){
 	print(test_results)
 
 	score = sum(as.vector(test_results$pred) == as.vector(test_results$actual))/nrow(test_results)
-	cat("Overall accuracy when predicting on the test data was", score*100, "%\n")
+	cat("Overall accuracy when predicting on the test data was", score, '\n')
 
 	return(score)
 }

@@ -22,6 +22,7 @@ fc_load_config = function(config_location, experiment_name, flags, gopts, fc=NUL
 	source(config_name)
 
 	results_dir = paste(results_dir, experiment_name, '/', sep='')
+	dir.create(results_dir)
 
 	if (exists("surv_location")){
 		surv = read.csv(file=surv_location, stringsAsFactors=FALSE, header=TRUE)
@@ -78,8 +79,16 @@ fc_load_config = function(config_location, experiment_name, flags, gopts, fc=NUL
 		}
 	}
 
-	sink(paste(results_dir, "sessionInfo.txt", sep=''))
+	stamp = gsub(':', '', Sys.time())
+	stamp = gsub('-', '', stamp)
+	stamp = gsub(' ', '_', stamp)
+	sink(paste(results_dir, "sessionInfo_", stamp, ".txt", sep=''))
+	print(Sys.time())
 	print(sessionInfo())
+	cat("\n=============================\n")
+	print("Objects defined prior to config loading")
+	cat("=============================\n")
+	print(sapply(ls.str(1)[!(ls.str(1) %in% lsf.str(1))], get))
 	sink()
 
 	# If experiments are one level down

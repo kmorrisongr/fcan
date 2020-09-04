@@ -2,7 +2,7 @@
 % Please edit documentation in R/fc_common_utils.R
 \name{fccu_first_feat_col}
 \alias{fccu_first_feat_col}
-\title{Find the First Column That Is A Feature}
+\title{Find the First Column that is a Feature}
 \usage{
 fccu_first_feat_col(fc)
 }

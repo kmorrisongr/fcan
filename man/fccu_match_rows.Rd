@@ -2,7 +2,7 @@
 % Please edit documentation in R/fc_common_utils.R
 \name{fccu_match_rows}
 \alias{fccu_match_rows}
-\title{Match The Length Of A Data Frame And Vector}
+\title{Match the Length of a Data Frame and Vector}
 \usage{
 fccu_match_rows(a, b, data)
 }

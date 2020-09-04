@@ -2,7 +2,7 @@
 % Please edit documentation in R/fc_common_utils.R
 \name{fccu_extend}
 \alias{fccu_extend}
-\title{Extend A Vector}
+\title{Extend a Vector}
 \usage{
 fccu_extend(vec, max_len, to_app = NA)
 }
